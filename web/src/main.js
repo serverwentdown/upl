@@ -22,7 +22,7 @@ uppy.use(StatusBar, {
 });
 uppy.use(AwsS3Multipart, {
 	limit: 3,
-	companionUrl: '.',
+	companionUrl: window.location.pathname,
 });
 
 const log = new Log('#log-area');

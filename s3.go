@@ -273,7 +273,7 @@ func abortMultipartUpload(key, uploadID string, cred credential) error {
 		return err
 	}
 	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusNoContent {
 		body, _ := ioutil.ReadAll(resp.Body)
 		return fmt.Errorf("endpoint request failed: %d: %s", resp.StatusCode, body)
 	}

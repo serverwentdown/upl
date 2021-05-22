@@ -4,5 +4,5 @@ import (
 	"embed"
 )
 
-//go:embed web/index.html web/assets/*
+//go:embed web/*.tmpl web/assets/*
 var assets embed.FS

@@ -24,14 +24,17 @@ func main() {
 	setupHandlers()
 
 	router := mux.NewRouter()
-	multipartRouter := router.PathPrefix("/s3/multipart").Subrouter()
-	router.PathPrefix("/").Handler(http.FileServer(http.FS(assetsWeb)))
+	uploadRouter := router.PathPrefix("/{id}").Subrouter()
+	router.PathPrefix("/assets").Handler(http.FileServer(http.FS(assetsWeb)))
 
-	multipartRouter.HandleFunc("", handleCreateMultipartUpload).Methods(http.MethodPost)
-	multipartRouter.HandleFunc("/{id}", handleGetUploadedParts).Methods(http.MethodGet)
-	multipartRouter.HandleFunc("/{id}/{part}", handleSignPartUpload).Methods(http.MethodGet)
-	multipartRouter.HandleFunc("/{id}/complete", handleCompleteMultipartUpload).Methods(http.MethodPost)
-	multipartRouter.HandleFunc("/{id}", handleAbortMultipartUpload).Methods(http.MethodDelete)
+	uploadRouter.Path("").HandlerFunc(handleUpload)
+	s3Router := uploadRouter.PathPrefix("/s3/multipart").Subrouter()
+
+	s3Router.Methods(http.MethodPost).Path("").HandlerFunc(handleCreateMultipartUpload)
+	s3Router.Methods(http.MethodGet).Path("/{uploadID}").HandlerFunc(handleGetUploadedParts)
+	s3Router.Methods(http.MethodGet).Path("/{uploadID}/{uploadPart}").HandlerFunc(handleSignPartUpload)
+	s3Router.Methods(http.MethodPost).Path("/{uploadID}/complete").HandlerFunc(handleCompleteMultipartUpload)
+	s3Router.Methods(http.MethodDelete).Path("/{uploadID}").HandlerFunc(handleAbortMultipartUpload)
 
 	server := &http.Server{
 		Handler:      router,
