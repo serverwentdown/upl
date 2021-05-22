@@ -1,26 +1,38 @@
+*, *:before, *:after {
+	box-sizing: border-box;
+}
+
 html {
 	height: 100%;
+}
+
+html, input {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
 body {
 	height: 100%;
 	margin: 0;
-
-	display: flex;
-	justify-content: center;
-	align-items: center;
 }
 
 
 .upload-wrapper {
 	max-width: 48rem;
 	width: 100%;
+	margin: 0 auto;
 }
 
 .upload {
-	margin: 2rem;
+	padding: 2rem;
 }
 
-#drop-area {
-	height: 16rem;
+#log-header {
+	margin-top: 2rem;
+
+	display: flex;
+}
+
+#log-header h4 {
+	flex: 1;
+	margin: 0.5rem 0;
 }

@@ -28,10 +28,10 @@ func main() {
 	router.PathPrefix("/").Handler(http.FileServer(http.FS(assetsWeb)))
 
 	multipartRouter.HandleFunc("", handleCreateMultipartUpload).Methods(http.MethodPost)
-	multipartRouter.HandleFunc("/{id}", getUploadedParts).Methods(http.MethodGet)
-	multipartRouter.HandleFunc("/{id}/{part}", signPartUpload).Methods(http.MethodGet)
-	multipartRouter.HandleFunc("/{id}/complete", completeMultipartUpload).Methods(http.MethodPost)
-	multipartRouter.HandleFunc("", abortMultipartUpload).Methods(http.MethodDelete)
+	multipartRouter.HandleFunc("/{id}", handleGetUploadedParts).Methods(http.MethodGet)
+	multipartRouter.HandleFunc("/{id}/{part}", handleSignPartUpload).Methods(http.MethodGet)
+	multipartRouter.HandleFunc("/{id}/complete", handleCompleteMultipartUpload).Methods(http.MethodPost)
+	multipartRouter.HandleFunc("", handleAbortMultipartUpload).Methods(http.MethodDelete)
 
 	server := &http.Server{
 		Handler:      router,

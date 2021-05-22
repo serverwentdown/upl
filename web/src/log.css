@@ -1,0 +1,27 @@
+.log-item {
+	display: flex;
+	align-items: center;
+	margin: 0.5rem 0;
+
+	border: 2px solid #adadad;
+	border-radius: 7px;
+}
+
+.log-url {
+	padding: 0.5rem;
+	flex: 1;
+	width: 10rem;
+
+	appearance: none;
+	outline: none;
+	border: none;
+	background: none;
+}
+
+.log-size {
+	padding: 0.25rem 0.5rem;
+
+	white-space: nowrap;
+	font-weight: 600;
+	font-size: 0.8em;
+}

@@ -14,7 +14,9 @@
     "@uppy/core": "^1.18.1",
     "@uppy/drag-drop": "^1.4.27",
     "@uppy/status-bar": "^1.9.3",
+    "filesize": "^6.3.0",
     "rollup": "^2.48.0",
-    "rollup-plugin-import-css": "^2.0.1"
+    "rollup-plugin-import-css": "^2.0.1",
+    "rollup-plugin-terser": "^7.0.2"
   }
 }

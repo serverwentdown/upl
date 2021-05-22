@@ -8,11 +8,14 @@ import '@uppy/drag-drop/dist/style.css';
 import '@uppy/status-bar/dist/style.css';
 import './main.css';
 
+import Log from './log';
+
 const uppy = new Uppy({
 	autoProceed: true,
 });
 uppy.use(DragDrop, {
 	target: '#drop-area',
+	height: '16rem',
 });
 uppy.use(StatusBar, {
 	target: '#status-area',
@@ -22,6 +25,16 @@ uppy.use(AwsS3Multipart, {
 	companionUrl: '.',
 });
 
+const log = new Log('#log-area');
+
 uppy.on('upload-success', (f, res) => {
-	console.log(f, res);
+	log.add({
+		name: f.name,
+		size: f.size,
+		location: res.body.Location,
+	});
+});
+
+document.querySelector('#log-clear').addEventListener('click', () => {
+	log.clear();
 });
