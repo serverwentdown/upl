@@ -3,7 +3,8 @@ import filesize from 'filesize';
 import './log.css';
 
 class Log {
-	constructor(selector) {
+	constructor(selector, key) {
+		this.key = key;
 		this.target = document.querySelector(selector);
 		this.items = [];
 
@@ -12,12 +13,12 @@ class Log {
 	}
 
 	localStorageLoad() {
-		const loaded = JSON.parse(window.localStorage.getItem("log") || "[]");
+		const loaded = JSON.parse(window.localStorage.getItem("log" + this.key) || "[]");
 		this.items.push(...loaded);
 	}
 
 	localStorageSave() {
-		window.localStorage.setItem("log", JSON.stringify(this.items));
+		window.localStorage.setItem("log" + this.key, JSON.stringify(this.items));
 	}
 
 	static renderItem(item) {

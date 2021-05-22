@@ -25,7 +25,7 @@ uppy.use(AwsS3Multipart, {
 	companionUrl: window.location.pathname,
 });
 
-const log = new Log('#log-area');
+const log = new Log('#log-area', window.location.pathname);
 
 uppy.on('upload-success', (f, res) => {
 	log.add({

@@ -2,6 +2,7 @@ package main
 
 import (
 	"io/fs"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -20,15 +21,21 @@ func main() {
 		panic(err)
 	}
 
-	setupS3()
 	setupHandlers()
+	setupS3()
 
 	router := mux.NewRouter()
-	uploadRouter := router.PathPrefix("/{id}").Subrouter()
-	router.PathPrefix("/assets").Handler(http.FileServer(http.FS(assetsWeb)))
+	router.Use(middlewareLogger)
 
-	uploadRouter.Path("").HandlerFunc(handleUpload)
+	router.Methods(http.MethodGet).PathPrefix("/assets").Handler(http.FileServer(http.FS(assetsWeb)))
+	router.Methods(http.MethodGet).Path("/favicon.ico").Handler(http.FileServer(http.FS(assetsWeb)))
+	router.Methods(http.MethodGet).Path("/").HandlerFunc(handleCreate)
+	uploadRouter := router.PathPrefix("/{id}").Subrouter()
+
+	uploadTemplateRouter := uploadRouter.Path("").Subrouter()
 	s3Router := uploadRouter.PathPrefix("/s3/multipart").Subrouter()
+
+	uploadTemplateRouter.Methods(http.MethodGet).Path("").HandlerFunc(handleUpload)
 
 	s3Router.Methods(http.MethodPost).Path("").HandlerFunc(handleCreateMultipartUpload)
 	s3Router.Methods(http.MethodGet).Path("/{uploadID}").HandlerFunc(handleGetUploadedParts)
@@ -42,6 +49,7 @@ func main() {
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
+	log.Printf("listeining on %s", listen)
 	err = server.ListenAndServe()
 	if err != nil {
 		panic(err)

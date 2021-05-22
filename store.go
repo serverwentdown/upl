@@ -12,6 +12,7 @@ import (
 
 var errKeyCollision = errors.New("key collision")
 var errKeyNotFound = fmt.Errorf("key %w", errNotFound)
+var errInvalidConnectionType = errors.New("invalid connection type")
 
 type store interface {
 	put(key string, data []byte, expire time.Duration) error
@@ -38,15 +39,14 @@ func newRedisStore(connection string) (*redisStore, error) {
 	var err error
 	if rtype == "simple" {
 		client, err = (radix.PoolConfig{}).New(ctx, "tcp", connectionParts[1])
-		if err != nil {
-			return nil, nil
-		}
 	} else if rtype == "cluster" {
 		clusterAddrs := strings.Split(connectionParts[1], ",")
 		client, err = (radix.ClusterConfig{}).New(ctx, clusterAddrs)
+	} else {
+		err = fmt.Errorf("%w: %#v of string %#v", errInvalidConnectionType, rtype, connection)
 	}
 	if err != nil {
-		return nil, nil
+		return nil, fmt.Errorf("unable to initialize redis store: %w", err)
 	}
 	return &redisStore{client}, nil
 }
@@ -56,7 +56,7 @@ func (s *redisStore) put(key string, data []byte, expire time.Duration) error {
 	defer cancel()
 
 	exists := 0
-	err := s.client.Do(ctx, radix.Cmd(&exists, "EXISTS", key))
+	err := s.client.Do(ctx, radix.Cmd(&exists, "EXISTS", "upl:"+key))
 	if err != nil {
 		return err
 	}
@@ -78,7 +78,7 @@ func (s *redisStore) get(key string) ([]byte, error) {
 	defer cancel()
 
 	var data []byte
-	err := s.client.Do(ctx, radix.Cmd(&data, "GET", key))
+	err := s.client.Do(ctx, radix.Cmd(&data, "GET", "upl:"+key))
 	if err != nil {
 		return nil, err
 	}

@@ -10,7 +10,7 @@ var errNotFound = errors.New("not found")
 var errBadRequest = errors.New("bad request")
 var errInternalServerError = errors.New("internal server error")
 
-func errorResponse(w http.ResponseWriter, req *http.Request, err error) {
+func errorResponseStatus(w http.ResponseWriter, req *http.Request, err error) {
 	errorMessage := err.Error()
 	errorStatus := http.StatusInternalServerError
 
@@ -22,6 +22,11 @@ func errorResponse(w http.ResponseWriter, req *http.Request, err error) {
 		errorStatus = http.StatusInternalServerError
 	}
 
-	log.Printf("%s %s: %s", req.Method, req.URL.Path, errorMessage)
+	log.Printf("%s %s: %s", req.Method, req.RequestURI, errorMessage)
 	w.WriteHeader(errorStatus)
+}
+
+func errorResponse(w http.ResponseWriter, req *http.Request, err error) {
+	errorResponseStatus(w, req, err)
+	w.Write([]byte(err.Error()))
 }

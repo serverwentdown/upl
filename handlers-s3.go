@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"os"
 	"strconv"
 
 	"github.com/gorilla/mux"
@@ -40,6 +39,13 @@ type createMultipartUploadRes struct {
 }
 
 func handleCreateMultipartUpload(w http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	cred, err := getCredential(vars["id"])
+	if err != nil {
+		errorResponse(w, req, err)
+		return
+	}
+
 	r := createMultipartUploadReq{}
 	decoder := json.NewDecoder(req.Body)
 	if err := decoder.Decode(&r); err != nil {
@@ -50,14 +56,6 @@ func handleCreateMultipartUpload(w http.ResponseWriter, req *http.Request) {
 	if err := r.validate(); err != nil {
 		errorResponse(w, req, fmt.Errorf("%w: %s", errBadRequest, err))
 		return
-	}
-
-	cred := credential{
-		AccessKey: os.Getenv("MINIO_ACCESS_KEY"),
-		SecretKey: os.Getenv("MINIO_SECRET_KEY"),
-		Region:    os.Getenv("MINIO_REGION_NAME"),
-		Endpoint:  os.Getenv("MINIO_ENDPOINT"),
-		Prefix:    os.Getenv("PREFIX"),
 	}
 
 	// Derive the object key
@@ -82,20 +80,18 @@ type getUploadedPartsRes []part
 
 func handleGetUploadedParts(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
+	cred, err := getCredential(vars["id"])
+	if err != nil {
+		errorResponse(w, req, err)
+		return
+	}
+
 	uploadID := vars["uploadID"]
 	key := req.URL.Query().Get("key")
 
 	if uploadID == "" || key == "" {
 		errorResponse(w, req, fmt.Errorf("%w", errBadRequest))
 		return
-	}
-
-	cred := credential{
-		AccessKey: os.Getenv("MINIO_ACCESS_KEY"),
-		SecretKey: os.Getenv("MINIO_SECRET_KEY"),
-		Region:    os.Getenv("MINIO_REGION_NAME"),
-		Endpoint:  os.Getenv("MINIO_ENDPOINT"),
-		Prefix:    os.Getenv("PREFIX"),
 	}
 
 	parts := make(getUploadedPartsRes, 0, 0)
@@ -127,6 +123,12 @@ type signPartUploadRes struct {
 
 func handleSignPartUpload(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
+	cred, err := getCredential(vars["id"])
+	if err != nil {
+		errorResponse(w, req, err)
+		return
+	}
+
 	uploadID := vars["uploadID"]
 	key := req.URL.Query().Get("key")
 	partNumber, err := strconv.ParseUint(vars["uploadPart"], 10, 16)
@@ -138,14 +140,6 @@ func handleSignPartUpload(w http.ResponseWriter, req *http.Request) {
 	if partNumber < 1 || partNumber > 10000 || err != nil {
 		errorResponse(w, req, fmt.Errorf("%w: invalid part number", errBadRequest))
 		return
-	}
-
-	cred := credential{
-		AccessKey: os.Getenv("MINIO_ACCESS_KEY"),
-		SecretKey: os.Getenv("MINIO_SECRET_KEY"),
-		Region:    os.Getenv("MINIO_REGION_NAME"),
-		Endpoint:  os.Getenv("MINIO_ENDPOINT"),
-		Prefix:    os.Getenv("PREFIX"),
 	}
 
 	params := make(url.Values)
@@ -182,6 +176,12 @@ func (r completeMultipartUploadReq) validate() error {
 
 func handleCompleteMultipartUpload(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
+	cred, err := getCredential(vars["id"])
+	if err != nil {
+		errorResponse(w, req, err)
+		return
+	}
+
 	uploadID := vars["uploadID"]
 	key := req.URL.Query().Get("key")
 
@@ -202,14 +202,6 @@ func handleCompleteMultipartUpload(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	cred := credential{
-		AccessKey: os.Getenv("MINIO_ACCESS_KEY"),
-		SecretKey: os.Getenv("MINIO_SECRET_KEY"),
-		Region:    os.Getenv("MINIO_REGION_NAME"),
-		Endpoint:  os.Getenv("MINIO_ENDPOINT"),
-		Prefix:    os.Getenv("PREFIX"),
-	}
-
 	result, err := completeMultipartUpload(key, uploadID, r.Parts, cred)
 	if err != nil {
 		errorResponse(w, req, fmt.Errorf("%w: %s", errInternalServerError, err))
@@ -224,6 +216,12 @@ func handleCompleteMultipartUpload(w http.ResponseWriter, req *http.Request) {
 
 func handleAbortMultipartUpload(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
+	cred, err := getCredential(vars["id"])
+	if err != nil {
+		errorResponse(w, req, err)
+		return
+	}
+
 	uploadID := vars["uploadID"]
 	key := req.URL.Query().Get("key")
 
@@ -232,15 +230,7 @@ func handleAbortMultipartUpload(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	cred := credential{
-		AccessKey: os.Getenv("MINIO_ACCESS_KEY"),
-		SecretKey: os.Getenv("MINIO_SECRET_KEY"),
-		Region:    os.Getenv("MINIO_REGION_NAME"),
-		Endpoint:  os.Getenv("MINIO_ENDPOINT"),
-		Prefix:    os.Getenv("PREFIX"),
-	}
-
-	err := abortMultipartUpload(key, uploadID, cred)
+	err = abortMultipartUpload(key, uploadID, cred)
 	if err != nil {
 		errorResponse(w, req, fmt.Errorf("%w: %s", errInternalServerError, err))
 		return
