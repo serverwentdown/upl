@@ -31,7 +31,7 @@ func main() {
 	multipartRouter.HandleFunc("/{id}", handleGetUploadedParts).Methods(http.MethodGet)
 	multipartRouter.HandleFunc("/{id}/{part}", handleSignPartUpload).Methods(http.MethodGet)
 	multipartRouter.HandleFunc("/{id}/complete", handleCompleteMultipartUpload).Methods(http.MethodPost)
-	multipartRouter.HandleFunc("", handleAbortMultipartUpload).Methods(http.MethodDelete)
+	multipartRouter.HandleFunc("/{id}", handleAbortMultipartUpload).Methods(http.MethodDelete)
 
 	server := &http.Server{
 		Handler:      router,

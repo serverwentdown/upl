@@ -253,3 +253,30 @@ func completeMultipartUpload(key, uploadID string, parts []completePart, cred cr
 
 	return result, nil
 }
+
+/* abortMultipartUpload */
+
+func abortMultipartUpload(key, uploadID string, cred credential) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
+
+	params := make(url.Values)
+	params.Set("uploadId", uploadID)
+	unsignedReq, err := http.NewRequestWithContext(ctx, http.MethodDelete, cred.Endpoint+"/"+key+"?"+params.Encode(), nil)
+	if err != nil {
+		return err
+	}
+
+	signedReq := sign(unsignedReq, cred)
+	resp, err := httpClientS3.Do(signedReq)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		body, _ := ioutil.ReadAll(resp.Body)
+		return fmt.Errorf("endpoint request failed: %d: %s", resp.StatusCode, body)
+	}
+
+	return nil
+}

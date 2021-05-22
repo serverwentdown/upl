@@ -1,6 +1,6 @@
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
-import css from 'rollup-plugin-import-css';
+import css from 'rollup-plugin-css-only';
 import { terser } from 'rollup-plugin-terser';
 
 export default {
@@ -15,6 +15,6 @@ export default {
     plugins: [
 		commonjs(),
 		resolve({ browser: true }),
-		css({ minify: true }),
+		css({ output: 'bundle.css' }),
 	],
 };

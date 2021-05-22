@@ -233,4 +233,26 @@ func handleCompleteMultipartUpload(w http.ResponseWriter, req *http.Request) {
 /* abortMultipartUpload */
 
 func handleAbortMultipartUpload(w http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	uploadID := vars["id"]
+	key := req.URL.Query().Get("key")
+
+	if uploadID == "" || key == "" {
+		errorResponse(w, req, fmt.Errorf("%w", errBadRequest))
+		return
+	}
+
+	cred := credential{
+		AccessKey: os.Getenv("MINIO_ACCESS_KEY"),
+		SecretKey: os.Getenv("MINIO_SECRET_KEY"),
+		Region:    os.Getenv("MINIO_REGION_NAME"),
+		Endpoint:  os.Getenv("MINIO_ENDPOINT"),
+		Prefix:    os.Getenv("PREFIX"),
+	}
+
+	err := abortMultipartUpload(key, uploadID, cred)
+	if err != nil {
+		errorResponse(w, req, fmt.Errorf("%w: %s", errInternalServerError, err))
+		return
+	}
 }
