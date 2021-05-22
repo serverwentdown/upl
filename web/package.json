@@ -1,0 +1,20 @@
+{
+  "name": "upl-web",
+  "version": "0.9.0",
+  "description": "Web interface for upl",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rollup --config",
+    "watch": "rollup --config --watch"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^19.0.0",
+    "@rollup/plugin-node-resolve": "^13.0.0",
+    "@uppy/aws-s3-multipart": "^1.8.15",
+    "@uppy/core": "^1.18.1",
+    "@uppy/drag-drop": "^1.4.27",
+    "@uppy/status-bar": "^1.9.3",
+    "rollup": "^2.48.0",
+    "rollup-plugin-import-css": "^2.0.1"
+  }
+}
