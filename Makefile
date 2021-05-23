@@ -3,7 +3,7 @@ NPM = npm
 
 
 .PHONY: all
-all: web build
+all: build
 
 .PHONY: clean
 clean:
@@ -12,11 +12,11 @@ clean:
 .PHONY: build
 build: upl
 
-upl: *.go web/*.tmpl
+upl: *.go web/*.tmpl web
 	$(GO) build -ldflags="-s -w" -tags "$(TAGS)" -v -o upl
 
 .PHONY: test
-test:
+test: web
 	$(GO) test -cover -bench=. -v ./...
 
 

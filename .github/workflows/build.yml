@@ -1,4 +1,4 @@
-name: Go
+name: Node.js and Go
 
 on:
   push:
@@ -12,6 +12,11 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     steps:
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 16
 
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
@@ -29,6 +34,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 16
+
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
       with:
@@ -44,6 +54,11 @@ jobs:
     name: Format
     runs-on: ubuntu-latest
     steps:
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 16
 
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
@@ -73,6 +88,11 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 16
 
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
