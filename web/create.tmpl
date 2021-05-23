@@ -80,6 +80,9 @@
 					autocomplete="off"
 					placeholder="">
 			</div>
+			<p class="mt-1 text-sm text-gray-500">
+				Your keys will be stored in the database until the dropbox link expires.
+			</p>
 		</div>
 
 		<div class="flex items-center">
@@ -131,20 +134,22 @@
 					type="number"
 					id="options-expiry-number"
 					name="ExpiresNumber"
+					required
 					value="7"
 					min="0"
 					max="1000">
 				<select
 					class="rounded-r-md border-gray-400 border-l-0"
 					id="options-expiry-unit"
-					name="ExpiresUnits">
+					name="ExpiresUnits"
+					required>
 					<option value="m">minutes</option>
 					<option value="h">hours</option>
 					<option value="d" selected>days</option>
 				</select>
 			</div>
 			<p class="mt-1 text-sm text-gray-500">
-				Time until the dropbox link expires, and credentials are purged from the server.
+				Time until the dropbox link expires, and credentials purged from the server.
 				<span class="text-red-700" id="expiry-notice"></span>
 			</p>
 			<input
