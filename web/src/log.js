@@ -6,6 +6,11 @@ class Log {
 		this.target = target;
 		this.items = [];
 
+		const empty = document.createElement('div');
+		empty.innerText = 'Your locally-stored file upload history is empty';
+		empty.classList.add('mt-1', 'p-2', 'bg-gray-50', 'text-gray-500', 'rounded-md', 'border', 'border-gray-400', 'flex', 'justify-center');
+		this.empty = empty;
+
 		this.localStorageLoad();
 		this.render();
 	}
@@ -28,27 +33,16 @@ class Log {
 		url.type = 'url';
 		url.value = item.location;
 		url.setAttribute('readonly', '');
-		url.classList.add('w-full');
-		url.classList.add('rounded-l-md');
-		url.classList.add('border-gray-400');
+		url.classList.add('w-full', 'rounded-l-md', 'border-gray-400');
 		url.addEventListener('click', (e) => {
-			e.target.setSelectionRange(0, e.target.value.length);
+			//e.target.setSelectionRange(0, e.target.value.length);
+			e.target.select();
 		});
 		base.appendChild(url);
 
 		const size = document.createElement('span');
 		size.innerText = filesize(item.size);
-		size.classList.add('text-sm');
-		size.classList.add('whitespace-nowrap');
-		size.classList.add('px-2');
-		size.classList.add('bg-gray-50');
-		size.classList.add('text-gray-500');
-		size.classList.add('rounded-r-md');
-		size.classList.add('border');
-		size.classList.add('border-gray-400');
-		size.classList.add('border-l-0');
-		size.classList.add('inline-flex');
-		size.classList.add('items-center');
+		size.classList.add('text-sm', 'whitespace-nowrap', 'px-2', 'bg-gray-50', 'text-gray-500', 'rounded-r-md', 'border', 'border-gray-400', 'border-l-0', 'inline-flex', 'items-center', 'justify-center', 'w-24');
 		base.appendChild(size);
 
 		return base;
@@ -60,12 +54,22 @@ class Log {
 		elements.forEach(element => {
 			this.target.appendChild(element);
 		});
+		this.renderEmpty();
+	}
+
+	renderEmpty() {
+		if (this.items.length == 0 && !this.target.contains(this.empty)) {
+			this.target.appendChild(this.empty);
+		} else if (this.target.contains(this.empty)) {
+			this.target.removeChild(this.empty);
+		}
 	}
 
 	add(item) {
 		this.items.push(item);
 		this.localStorageSave();
 		this.target.appendChild(this.constructor.renderItem(item));
+		this.renderEmpty();
 	}
 
 	clear() {
