@@ -2,7 +2,7 @@ import filesize from 'filesize';
 
 class Log {
 	constructor(target, key, messages) {
-		this.key = key;
+		this.key = 'log:' + key;
 		this.target = target;
 		this.items = [];
 
@@ -16,12 +16,12 @@ class Log {
 	}
 
 	localStorageLoad() {
-		const loaded = JSON.parse(window.localStorage.getItem('log' + this.key) || '[]');
+		const loaded = JSON.parse(window.localStorage.getItem(this.key) || '[]');
 		this.items.push(...loaded);
 	}
 
 	localStorageSave() {
-		window.localStorage.setItem('log' + this.key, JSON.stringify(this.items));
+		window.localStorage.setItem(this.key, JSON.stringify(this.items));
 	}
 
 	static renderItem(item) {
