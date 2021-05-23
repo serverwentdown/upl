@@ -64,7 +64,7 @@ func handleCreateMultipartUpload(w http.ResponseWriter, req *http.Request) {
 	}
 
 	if err := r.validate(); err != nil {
-		errorResponse(w, req, fmt.Errorf("%w: %s", errBadRequest, err))
+		errorResponse(w, req, err)
 		return
 	}
 
@@ -73,7 +73,7 @@ func handleCreateMultipartUpload(w http.ResponseWriter, req *http.Request) {
 
 	result, err := initiateMultipartUpload(key, cred)
 	if err != nil {
-		errorResponse(w, req, fmt.Errorf("%w: %s", errInternalServerError, err))
+		errorResponse(w, req, err)
 		return
 	}
 
@@ -109,7 +109,7 @@ func handleGetUploadedParts(w http.ResponseWriter, req *http.Request) {
 	for {
 		page, err := listParts(key, uploadID, cred, nextPartNumberMarker)
 		if err != nil {
-			errorResponse(w, req, fmt.Errorf("%w: %s", errInternalServerError, err))
+			errorResponse(w, req, err)
 			return
 		}
 
@@ -208,13 +208,13 @@ func handleCompleteMultipartUpload(w http.ResponseWriter, req *http.Request) {
 	}
 
 	if err := r.validate(); err != nil {
-		errorResponse(w, req, fmt.Errorf("%w: %s", errBadRequest, err))
+		errorResponse(w, req, err)
 		return
 	}
 
 	result, err := completeMultipartUpload(key, uploadID, r.Parts, cred)
 	if err != nil {
-		errorResponse(w, req, fmt.Errorf("%w: %s", errInternalServerError, err))
+		errorResponse(w, req, err)
 		return
 	}
 
@@ -242,7 +242,7 @@ func handleAbortMultipartUpload(w http.ResponseWriter, req *http.Request) {
 
 	err = abortMultipartUpload(key, uploadID, cred)
 	if err != nil {
-		errorResponse(w, req, fmt.Errorf("%w: %s", errInternalServerError, err))
+		errorResponse(w, req, err)
 		return
 	}
 }

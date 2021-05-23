@@ -41,7 +41,7 @@ class Deriver {
 		if (!this.notice) {
 			return;
 		}
-		let message = error.toString();
+		let message = error.message || error.toString();
 		if (Array.isArray(error.problems)) {
 			message = 'Invalid input: ' + error.problems.join(', ');
 		}

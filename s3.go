@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -52,6 +53,32 @@ func stripETag(t string) string {
 	return strings.TrimSuffix(strings.TrimPrefix(t, "\""), "\"")
 }
 
+type errEndpoint struct {
+	err    error
+	status string
+	body   []byte
+}
+
+func (e errEndpoint) Unwrap() error {
+	return e.err
+}
+
+func (e errEndpoint) Error() string {
+	body := bytes.ReplaceAll(e.body, []byte("\n"), []byte(""))
+	if e.err != nil {
+		return fmt.Sprintf("endpoint responded with %v: %s", e.err, body)
+	}
+	return fmt.Sprintf("endpoint responded with %s: %s", e.status, body)
+}
+
+func endpointReturnedError(resp *http.Response) error {
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		body, _ := ioutil.ReadAll(resp.Body)
+		return errEndpoint{responseToError(resp), resp.Status, body}
+	}
+	return nil
+}
+
 /* initiateMultipartUpload */
 
 type initiateMultipartUploadResult struct {
@@ -71,6 +98,7 @@ func initiateMultipartUpload(
 	params.Set("uploads", "")
 	unsignedReq, err := http.NewRequestWithContext(ctx, http.MethodPost, cred.Endpoint+"/"+key+"?"+params.Encode(), nil)
 	if err != nil {
+		log.Printf("failure creating request: %v", err)
 		return initiateMultipartUploadResult{}, err
 	}
 	if cred.ACL != "" {
@@ -80,12 +108,14 @@ func initiateMultipartUpload(
 	signedReq := sign(unsignedReq, cred)
 	resp, err := httpClientS3.Do(signedReq)
 	if err != nil {
+		log.Printf("failure connecting to endpoint: %v", err)
 		return initiateMultipartUploadResult{}, err
 	}
 	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		body, _ := ioutil.ReadAll(resp.Body)
-		return initiateMultipartUploadResult{}, fmt.Errorf("endpoint request failed: %d: %s", resp.StatusCode, body)
+	err = endpointReturnedError(resp)
+	if err != nil {
+		log.Printf("endpoint responded negatively: %v", err)
+		return initiateMultipartUploadResult{}, err
 	}
 
 	result := initiateMultipartUploadResult{}
@@ -136,18 +166,21 @@ func listParts(
 	params.Set("uploadId", uploadID)
 	unsignedReq, err := http.NewRequestWithContext(ctx, http.MethodGet, cred.Endpoint+"/"+key+"?"+params.Encode(), nil)
 	if err != nil {
+		log.Printf("failure creating request: %v", err)
 		return listPartsResult{}, err
 	}
 
 	signedReq := sign(unsignedReq, cred)
 	resp, err := httpClientS3.Do(signedReq)
 	if err != nil {
+		log.Printf("failure connecting to endpoint: %v", err)
 		return listPartsResult{}, err
 	}
 	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		body, _ := ioutil.ReadAll(resp.Body)
-		return listPartsResult{}, fmt.Errorf("endpoint request failed: %d: %s", resp.StatusCode, body)
+	err = endpointReturnedError(resp)
+	if err != nil {
+		log.Printf("endpoint responded negatively: %v", err)
+		return listPartsResult{}, err
 	}
 
 	result := listPartsResult{}
@@ -213,18 +246,21 @@ func completeMultipartUpload(
 	params.Set("uploadId", uploadID)
 	unsignedReq, err := http.NewRequestWithContext(ctx, http.MethodPost, cred.Endpoint+"/"+key+"?"+params.Encode(), &body)
 	if err != nil {
+		log.Printf("failure creating request: %v", err)
 		return completeMultipartUploadResult{}, err
 	}
 
 	signedReq := sign(unsignedReq, cred)
 	resp, err := httpClientS3.Do(signedReq)
 	if err != nil {
+		log.Printf("failure connecting to endpoint: %v", err)
 		return completeMultipartUploadResult{}, err
 	}
 	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		body, _ := ioutil.ReadAll(resp.Body)
-		return completeMultipartUploadResult{}, fmt.Errorf("endpoint request failed: %d: %s", resp.StatusCode, body)
+	err = endpointReturnedError(resp)
+	if err != nil {
+		log.Printf("endpoint responded negatively: %v", err)
+		return completeMultipartUploadResult{}, err
 	}
 
 	result := completeMultipartUploadResult{}
@@ -252,18 +288,21 @@ func abortMultipartUpload(
 	params.Set("uploadId", uploadID)
 	unsignedReq, err := http.NewRequestWithContext(ctx, http.MethodDelete, cred.Endpoint+"/"+key+"?"+params.Encode(), nil)
 	if err != nil {
+		log.Printf("failure creating request: %v", err)
 		return err
 	}
 
 	signedReq := sign(unsignedReq, cred)
 	resp, err := httpClientS3.Do(signedReq)
 	if err != nil {
+		log.Printf("failure connecting to endpoint: %v", err)
 		return err
 	}
 	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusNoContent {
-		body, _ := ioutil.ReadAll(resp.Body)
-		return fmt.Errorf("endpoint request failed: %d: %s", resp.StatusCode, body)
+	err = endpointReturnedError(resp)
+	if err != nil {
+		log.Printf("endpoint responded negatively: %v", err)
+		return err
 	}
 
 	return nil

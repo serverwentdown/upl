@@ -11,3 +11,4 @@ import '@uppy/status-bar/dist/style.css';
 import './save';
 import './derive';
 import './upload';
+import './create';

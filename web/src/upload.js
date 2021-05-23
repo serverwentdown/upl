@@ -17,7 +17,9 @@ uploadAreas.forEach(uploadArea => {
 
 	/* Components */
 
-	const log = new Log(logArea, window.location.pathname);
+	const log = new Log(logArea, window.location.pathname, {
+		empty: 'Your locally-stored file upload history is empty',
+	});
 
 	logClearBtn.addEventListener('click', () => {
 		log.clear();

@@ -8,6 +8,8 @@ import (
 var errNotFound = errors.New("not found")
 var errBadRequest = errors.New("bad request")
 var errInternalServerError = errors.New("internal server error")
+var errUnauthorized = errors.New("unauthorized")
+var errForbidden = errors.New("forbidden")
 
 func errorResponseStatus(w http.ResponseWriter, req *http.Request, err error) {
 	errorStatus := http.StatusInternalServerError
@@ -18,6 +20,10 @@ func errorResponseStatus(w http.ResponseWriter, req *http.Request, err error) {
 		errorStatus = http.StatusBadRequest
 	} else if errors.Is(err, errInternalServerError) {
 		errorStatus = http.StatusInternalServerError
+	} else if errors.Is(err, errUnauthorized) {
+		errorStatus = http.StatusUnauthorized
+	} else if errors.Is(err, errForbidden) {
+		errorStatus = http.StatusForbidden
 	}
 
 	w.WriteHeader(errorStatus)
@@ -30,4 +36,20 @@ func errorResponseStatus(w http.ResponseWriter, req *http.Request, err error) {
 func errorResponse(w http.ResponseWriter, req *http.Request, err error) {
 	errorResponseStatus(w, req, err)
 	w.Write([]byte(err.Error()))
+}
+
+// responseToError converts a HTTP status code to an error
+func responseToError(resp *http.Response) error {
+	if resp.StatusCode == http.StatusNotFound {
+		return errNotFound
+	} else if resp.StatusCode == http.StatusBadRequest {
+		return errBadRequest
+	} else if resp.StatusCode == http.StatusInternalServerError {
+		return errInternalServerError
+	} else if resp.StatusCode == http.StatusUnauthorized {
+		return errUnauthorized
+	} else if resp.StatusCode == http.StatusForbidden {
+		return errForbidden
+	}
+	return nil
 }

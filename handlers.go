@@ -114,15 +114,16 @@ type createReq struct {
 }
 
 func handleCreateForm(w http.ResponseWriter, req *http.Request) {
-	cred := credential{
-		Endpoint:  req.PostFormValue("Endpoint"),
-		Region:    req.PostFormValue("Region"),
-		AccessKey: req.PostFormValue("AccessKey"),
-		SecretKey: req.PostFormValue("SecretKey"),
-		Prefix:    req.PostFormValue("Prefix"),
-	}
+	cred := newCredential(
+		req.PostFormValue("Endpoint"),
+		req.PostFormValue("Region"),
+		req.PostFormValue("AccessKey"),
+		req.PostFormValue("SecretKey"),
+		req.PostFormValue("Prefix"),
+		req.PostFormValue("ACL"),
+	)
 	if err := cred.validate(); err != nil {
-		errorResponse(w, req, fmt.Errorf("%w: %s", errBadRequest, err))
+		errorResponse(w, req, err)
 		return
 	}
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"strings"
 	"time"
 
@@ -62,7 +63,7 @@ func (s *redisStore) ping() error {
 		return err
 	}
 	if pong != "PONG" {
-		return errInternalServerError
+		return fmt.Errorf("%w: pong request failed", errInternalServerError)
 	}
 	return nil
 }
@@ -74,6 +75,7 @@ func (s *redisStore) put(key string, data []byte, expire time.Duration) error {
 	exists := 0
 	err := s.client.Do(ctx, radix.Cmd(&exists, "EXISTS", "upl:"+key))
 	if err != nil {
+		log.Printf("put failed on existence check: %v", err)
 		return err
 	}
 
@@ -84,6 +86,7 @@ func (s *redisStore) put(key string, data []byte, expire time.Duration) error {
 	expireS := int64(expire / time.Second)
 	err = s.client.Do(ctx, radix.FlatCmd(nil, "SETEX", "upl:"+key, expireS, data))
 	if err != nil {
+		log.Printf("put failed: %v", err)
 		return err
 	}
 	return nil
@@ -96,6 +99,7 @@ func (s *redisStore) get(key string) ([]byte, error) {
 	var data []byte
 	err := s.client.Do(ctx, radix.Cmd(&data, "GET", "upl:"+key))
 	if err != nil {
+		log.Printf("get failed: %v", err)
 		return nil, err
 	}
 

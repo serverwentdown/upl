@@ -1,17 +1,35 @@
-{{template "head.tmpl" "Create dropbox"}}
-<form class="space-y-8 px-6 my-8" method="POST">
-
-	<h1 class="my-4 text-4xl font-bold text-center">Create a dropbox</h1>
+{{template "head.tmpl" "Your dropboxes"}}
+<form class="create space-y-12 px-6 my-12" method="POST">
 
 	<section class="space-y-4">
+		<h1 class="text-4xl font-bold text-center">Your dropboxes</h1>
+
 		<div class="flex items-center">
-			<h4 class="my-2 flex-1 text-lg font-bold">Bucket options</h4>
+			<h4 class="my-2 flex-1 text-xl font-bold">Previously created</h4>
+			<span>
+				<button
+					type="button"
+					class="log-clear px-6 py-2 rounded-md bg-yellow-600 text-white hover:bg-yellow-700 focus:ring-2 focus:ring-offset-2 focus:ring-yellow-600">
+					Clear
+				</button>
+			</span>
+		</div>
+		<div class="log-area"></div>
+	</section>
+
+	<section class="space-y-4">
+		<h1 class="text-4xl font-bold text-center">Create a dropbox</h1>
+
+		<div class="notice-area hidden p-4 bg-red-100 text-red-700"></div>
+
+		<div class="flex items-center">
+			<h4 class="my-2 flex-1 text-xl font-bold">Bucket options</h4>
 			<span>
 				<input
 					class="rounded"
 					type="checkbox"
 					id="options-save-bucket"
-					data-save="Endpoint,Region,AccessKey,SecretKey,Prefix,ACL">
+					data-save="Endpoint,Region,AccessKey,SecretKey">
 				<label for="options-save-bucket">Remember</label>
 			</span>
 		</div>
@@ -23,6 +41,7 @@
 					type="url"
 					id="options-endpoint"
 					name="Endpoint"
+					required
 					placeholder="https://bucketname.s3.us-west-2.amazonaws.com">
 			</div>
 		</div>
@@ -34,6 +53,7 @@
 					type="text"
 					id="options-region"
 					name="Region"
+					required
 					placeholder="us-east-1">
 			</div>
 		</div>
@@ -45,6 +65,7 @@
 					type="text"
 					id="options-accesskey"
 					name="AccessKey"
+					autocomplete="off"
 					placeholder="">
 			</div>
 		</div>
@@ -56,22 +77,36 @@
 					type="text"
 					id="options-secretkey"
 					name="SecretKey"
+					autocomplete="off"
 					placeholder="">
 			</div>
 		</div>
-	</section>
 
-	<section class="space-y-4">
 		<div class="flex items-center">
-			<h4 class="my-2 flex-1 text-lg font-bold">Upload options</h4>
+			<h4 class="my-2 flex-1 text-xl font-bold">Upload options</h4>
 			<span>
 				<input
 					class="rounded"
 					type="checkbox"
 					id="options-save-upload"
-					data-save="Prefix,ExpiresNumber,ExpiresUnits">
+					data-save="ACL,Prefix,ExpiresNumber,ExpiresUnits">
 				<label for="options-save-upload">Remember</label>
 			</span>
+		</div>
+		<div>
+			<label for="options-acl">Canned ACL <span class="text-sm text-gray-500">Optional</span></label>
+			<div class="mt-1">
+				<input
+					class="w-full rounded-md border-gray-400"
+					type="text"
+					id="options-acl"
+					name="ACL"
+					placeholder=""
+					value="">
+			</div>
+			<p class="mt-1 text-sm text-gray-500">
+				Specify an optional <a class="text-blue-700" target="_blank" href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html#canned-acl">canned ACL</a>. Otherwise, object access permissions will follow bucket defaults.
+			</p>
 		</div>
 		<div>
 			<label for="options-prefix">Prefix</label>
@@ -85,7 +120,7 @@
 					value="{random}/">
 			</div>
 			<p class="mt-1 text-sm text-gray-500">
-			Files will be uploaded with this prefix. For a random <code>[a-z0-9]{16}</code> prefix , use <code>{random}</code>.
+				Files will be uploaded with this prefix. For a random <code>[a-z0-9]{16}</code> prefix , use <code>{random}</code>.
 			</p>
 		</div>
 		<div>
@@ -118,9 +153,6 @@
 				data-derive="duration,ExpiresNumber,ExpiresUnits"
 				data-derive-notice="#expiry-notice">
 		</div>
-	</section>
-
-	<section class="space-y-4">
 		<div class="flex justify-end">
 			<input
 				class="px-6 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 focus:ring-2 focus:ring-offset-2 focus:ring-green-600"
