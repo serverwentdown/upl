@@ -12,7 +12,8 @@ type credential struct {
 	SecretKey string
 	// Region is critical when signing requests.
 	Region string
-	// Endpoint is the base URL of the bucket, including the bucket name (in either the domain or path).
+	// Endpoint is the base URL of the bucket, including the bucket name (in
+	// either the domain or path).
 	//
 	// Example:
 	//   https://bucketname.s3.us-west-2.amazonaws.com

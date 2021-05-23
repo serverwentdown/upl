@@ -27,8 +27,8 @@ func main() {
 	router := mux.NewRouter()
 	router.Use(middlewareLogger)
 
+	router.Methods(http.MethodGet).Path("/readyz").HandlerFunc(readyz)
 	router.Methods(http.MethodGet).PathPrefix("/assets").Handler(http.FileServer(http.FS(assetsWeb)))
-	router.Methods(http.MethodGet).Path("/favicon.ico").Handler(http.FileServer(http.FS(assetsWeb)))
 	router.Methods(http.MethodGet).Path("/").HandlerFunc(handleCreate)
 	uploadRouter := router.PathPrefix("/{id}").Subrouter()
 

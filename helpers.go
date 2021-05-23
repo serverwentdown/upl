@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"log"
 	"net/http"
 )
 
@@ -11,7 +10,6 @@ var errBadRequest = errors.New("bad request")
 var errInternalServerError = errors.New("internal server error")
 
 func errorResponseStatus(w http.ResponseWriter, req *http.Request, err error) {
-	errorMessage := err.Error()
 	errorStatus := http.StatusInternalServerError
 
 	if errors.Is(err, errNotFound) {
@@ -22,10 +20,13 @@ func errorResponseStatus(w http.ResponseWriter, req *http.Request, err error) {
 		errorStatus = http.StatusInternalServerError
 	}
 
-	log.Printf("%s %s: %s", req.Method, req.RequestURI, errorMessage)
 	w.WriteHeader(errorStatus)
 }
 
+// errorResponse prints the error message in the response body.
+//
+// Do not use this function when the error message might contain sensitive
+// information.
 func errorResponse(w http.ResponseWriter, req *http.Request, err error) {
 	errorResponseStatus(w, req, err)
 	w.Write([]byte(err.Error()))

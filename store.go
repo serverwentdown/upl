@@ -17,6 +17,7 @@ var errInvalidConnectionType = errors.New("invalid connection type")
 type store interface {
 	put(key string, data []byte, expire time.Duration) error
 	get(key string) ([]byte, error)
+	ping() error
 }
 
 type redisStore struct {
@@ -51,8 +52,23 @@ func newRedisStore(connection string) (*redisStore, error) {
 	return &redisStore{client}, nil
 }
 
+func (s *redisStore) ping() error {
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	defer cancel()
+
+	var pong string
+	err := s.client.Do(ctx, radix.Cmd(&pong, "PING"))
+	if err != nil {
+		return err
+	}
+	if pong != "PONG" {
+		return errInternalServerError
+	}
+	return nil
+}
+
 func (s *redisStore) put(key string, data []byte, expire time.Duration) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 500*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
 	exists := 0
@@ -74,7 +90,7 @@ func (s *redisStore) put(key string, data []byte, expire time.Duration) error {
 }
 
 func (s *redisStore) get(key string) ([]byte, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 500*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
 	var data []byte

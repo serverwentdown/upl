@@ -1,23 +1,15 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Upload</title>
-	<link rel="stylesheet" href="assets/bundle.css">
-</head>
-<body>
-	<div class="upload-wrapper">
-		<div class="upload">
-			<div id="drop-area"></div>
-			<div id="status-area"></div>
-			<div id="log-header">
-				<h4>Completed</h4>
-				<button id="log-clear">Clear</button>
-			</div>
-			<div id="log-area"></div>
+{{template "head.tmpl" "Dropbox Not Found"}}
+<div class="upload-wrapper">
+	<div class="upload">
+		<div id="drop-area"></div>
+		<div id="status-area"></div>
+		<div id="log-header">
+			<h4>Completed</h4>
+			<button id="log-clear">Clear</button>
 		</div>
+		<div id="log-area"></div>
 	</div>
+</div>
 
-	<script src="assets/bundle.js"></script>
-</body>
+<script src="assets/bundle.js"></script>
+{{template "foot.tmpl"}}

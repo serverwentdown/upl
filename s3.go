@@ -60,7 +60,10 @@ type initiateMultipartUploadResult struct {
 	UploadID string `xml:"UploadId"`
 }
 
-func initiateMultipartUpload(key string, cred credential) (initiateMultipartUploadResult, error) {
+func initiateMultipartUpload(
+	key string,
+	cred credential,
+) (initiateMultipartUploadResult, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
@@ -119,7 +122,11 @@ type listPartsResult struct {
 	Parts                []part `xml:"Part"`
 }
 
-func listParts(key, uploadID string, cred credential, partNumberMarker uint32) (listPartsResult, error) {
+func listParts(
+	key, uploadID string,
+	cred credential,
+	partNumberMarker uint32,
+) (listPartsResult, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
@@ -151,7 +158,7 @@ func listParts(key, uploadID string, cred credential, partNumberMarker uint32) (
 	}
 
 	for i := range result.Parts {
-		result.Parts[i].ETag = strings.TrimSuffix(strings.TrimPrefix(result.Parts[i].ETag, "\""), "\"")
+		result.Parts[i].ETag = stripETag(result.Parts[i].ETag)
 	}
 
 	return result, nil
@@ -186,7 +193,11 @@ type completeMultipartUploadResult struct {
 	ETag     string
 }
 
-func completeMultipartUpload(key, uploadID string, parts []completePart, cred credential) (completeMultipartUploadResult, error) {
+func completeMultipartUpload(
+	key, uploadID string,
+	parts []completePart,
+	cred credential,
+) (completeMultipartUploadResult, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
@@ -230,7 +241,10 @@ func completeMultipartUpload(key, uploadID string, parts []completePart, cred cr
 
 /* abortMultipartUpload */
 
-func abortMultipartUpload(key, uploadID string, cred credential) error {
+func abortMultipartUpload(
+	key, uploadID string,
+	cred credential,
+) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 

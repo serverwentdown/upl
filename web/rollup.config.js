@@ -1,6 +1,7 @@
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
-import css from 'rollup-plugin-css-only';
+import postcss from 'rollup-plugin-postcss';
+import copy from 'rollup-plugin-copy';
 import { terser } from 'rollup-plugin-terser';
 
 export default {
@@ -15,6 +16,9 @@ export default {
     plugins: [
 		commonjs(),
 		resolve({ browser: true }),
-		css({ output: 'bundle.css' }),
+		postcss({ extract: true, minimize: true }),
+		copy({ targets: [
+			{ src: 'static/favicon.png', dest: 'assets' },
+		] }),
 	],
 };
