@@ -16,7 +16,7 @@ upl: *.go web/*.tmpl
 	$(GO) build -ldflags="-s -w" -tags "$(TAGS)" -v -o upl
 
 .PHONY: test
-test: data
+test:
 	$(GO) test -cover -bench=. -v ./...
 
 

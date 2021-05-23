@@ -59,6 +59,8 @@ createAreas.forEach(createArea => {
 					title: `
 Endpoint: ${data.get('Endpoint')}
 Region: ${data.get('Region')}
+Access key: ${data.get('AccessKey')}
+Canned ACL: ${data.get('ACL')}}
 Prefix: ${data.get('Prefix')}
 Expires: ${data.get('ExpiresNumber')}${data.get('ExpiresUnits')}
 		`.trim(),

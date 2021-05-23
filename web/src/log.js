@@ -44,7 +44,7 @@ class Log {
 		const urlOpen = document.createElement('a');
 		urlOpen.target = '_blank';
 		urlOpen.href = item.location;
-		urlOpen.classList.add('rounded-r-md', 'px-2', 'text-blue-700', 'border', 'border-l-0', 'border-gray-400', 'inline-flex', 'items-center');
+		urlOpen.classList.add('rounded-r-md', 'px-2', 'text-blue-600', 'hover:text-blue-800', 'border', 'border-l-0', 'border-gray-400', 'inline-flex', 'items-center');
 		urlOpen.innerText = 'Open';
 		base.appendChild(urlOpen);
 
