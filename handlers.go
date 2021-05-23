@@ -138,7 +138,7 @@ func handleCreateForm(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	id := gonanoid.MustGenerate(idAlphabet, 20)
+	id := gonanoid.MustGenerate(idAlphabet, 12)
 
 	err = setCredential(id, cred, expires)
 	if err != nil {
