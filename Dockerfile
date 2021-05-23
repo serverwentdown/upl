@@ -13,7 +13,7 @@ ARG CGO_ENABLED=0
 
 WORKDIR /src
 COPY --from=build-web . .
-RUN go build -ldflags="-s -w" -v
+RUN make TAGS=production
 
 FROM scratch
 
