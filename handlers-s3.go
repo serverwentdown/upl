@@ -7,9 +7,19 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
+	gonanoid "github.com/matoous/go-nanoid/v2"
 )
+
+func formatKey(prefix, filename string) string {
+	for strings.Contains(prefix, "{random}") {
+		random := gonanoid.MustGenerate(idAlphabet, 16)
+		prefix = strings.Replace(prefix, "{random}", random, 1)
+	}
+	return prefix + filename
+}
 
 /* createMultipartUpload */
 
@@ -59,7 +69,7 @@ func handleCreateMultipartUpload(w http.ResponseWriter, req *http.Request) {
 	}
 
 	// Derive the object key
-	key := cred.Prefix + r.Filename
+	key := formatKey(cred.Prefix, r.Filename)
 
 	result, err := initiateMultipartUpload(key, cred)
 	if err != nil {
