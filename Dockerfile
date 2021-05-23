@@ -12,7 +12,7 @@ FROM golang:1.16-alpine3.13 as build
 RUN apk add \
 	make
 WORKDIR /src
-COPY --from=build-web . .
+COPY --from=build-web /src .
 
 ARG CGO_ENABLED=0
 RUN make TAGS=production
@@ -20,6 +20,6 @@ RUN make TAGS=production
 FROM scratch
 
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
-COPY --from=build upl /upl
+COPY --from=build /src/upl /upl
 
-RUN ["/upl"]
+CMD ["/upl"]

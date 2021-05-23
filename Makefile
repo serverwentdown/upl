@@ -18,6 +18,9 @@ upl: *.go web/*.tmpl web
 .PHONY: test
 test: web
 	$(GO) test -cover -bench=. -v ./...
+.PHONY: vet
+vet: web
+	$(GO) vet ./...
 
 
 .PHONY: web
