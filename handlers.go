@@ -13,7 +13,6 @@ import (
 )
 
 var globalStore store
-var handleAssets = http.FileServer(http.FS(assetsWeb))
 
 func setupHandlers() {
 	var err error
@@ -23,8 +22,27 @@ func setupHandlers() {
 	}
 
 	if debug {
-		handleAssets = http.FileServer(http.FS(os.DirFS("web/assets/")))
+		assetsServer = http.FileServer(http.FS(os.DirFS("web")))
 	}
+}
+
+/* assets */
+
+var assetsServer = http.FileServer(http.FS(assetsWeb))
+
+func handleAssets(w http.ResponseWriter, req *http.Request) {
+	assetsServer.ServeHTTP(w, req)
+}
+
+/* templates */
+
+var tmpl = template.Must(template.ParseFS(assets, "web/*.tmpl"))
+
+func executeTemplate(w io.Writer, name string, data interface{}) error {
+	if debug {
+		tmpl = template.Must(template.ParseGlob("web/*.tmpl"))
+	}
+	return tmpl.ExecuteTemplate(w, name, nil)
 }
 
 /* credentials */
@@ -57,17 +75,6 @@ func setCredential(id string, cred credential, expire time.Duration) error {
 	}
 
 	return nil
-}
-
-/* templates */
-
-var tmpl = template.Must(template.ParseFS(assets, "web/*.tmpl"))
-
-func executeTemplate(w io.Writer, name string, data interface{}) error {
-	if debug {
-		tmpl = template.Must(template.ParseGlob("web/*.tmpl"))
-	}
-	return tmpl.ExecuteTemplate(w, name, nil)
 }
 
 /* upload template */

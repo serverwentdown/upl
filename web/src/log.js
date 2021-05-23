@@ -11,12 +11,12 @@ class Log {
 	}
 
 	localStorageLoad() {
-		const loaded = JSON.parse(window.localStorage.getItem("log" + this.key) || "[]");
+		const loaded = JSON.parse(window.localStorage.getItem('log' + this.key) || '[]');
 		this.items.push(...loaded);
 	}
 
 	localStorageSave() {
-		window.localStorage.setItem("log" + this.key, JSON.stringify(this.items));
+		window.localStorage.setItem('log' + this.key, JSON.stringify(this.items));
 	}
 
 	static renderItem(item) {
@@ -25,9 +25,9 @@ class Log {
 
 		const url = document.createElement('input');
 		url.value = item.location;
-		url.setAttribute("readonly", "");
+		url.setAttribute('readonly', '');
 		url.classList.add('log-url');
-		url.addEventListener("click", (e) => {
+		url.addEventListener('click', (e) => {
 			e.target.setSelectionRange(0, e.target.value.length);
 		});
 		base.appendChild(url);
@@ -42,7 +42,7 @@ class Log {
 
 	render() {
 		const elements = this.items.map(this.constructor.renderItem);	
-		this.target.innerHTML = "";
+		this.target.innerHTML = '';
 		elements.forEach(element => {
 			this.target.appendChild(element);
 		});

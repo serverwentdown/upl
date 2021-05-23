@@ -95,7 +95,8 @@
 					id="options-expiry-number"
 					name="ExpiryNumber"
 					value="7"
-					min="0">
+					min="0"
+					max="1000">
 				<select
 					class="rounded-r-md border-gray-400"
 					id="options-expiry-unit"
@@ -107,8 +108,13 @@
 			</div>
 			<p class="mt-1 text-sm text-gray-500">
 				Time until the link expires, and credentials are purged from the server.
+				<span class="text-red-700" id="expiry-notice"></span>
 			</p>
-			<input type="hidden" name="Expiry" value="" data-derive="duration,ExpiryNumber,ExpiryUnits">
+			<input
+				type="hidden"
+				name="Expiry"
+				data-derive="duration,ExpiryNumber,ExpiryUnits"
+				data-derive-notice="#expiry-notice">
 		</div>
 	</section>
 

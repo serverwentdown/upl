@@ -24,7 +24,7 @@ func main() {
 	router.Use(middlewareLogger)
 
 	router.Methods(http.MethodGet).Path("/readyz").HandlerFunc(readyz)
-	router.Methods(http.MethodGet).PathPrefix("/assets").Handler(handleAssets)
+	router.Methods(http.MethodGet).PathPrefix("/assets").HandlerFunc(handleAssets)
 
 	router.Methods(http.MethodGet).Path("/create").HandlerFunc(handleCreate)
 	uploadRouter := router.PathPrefix("/{id}").Subrouter()
