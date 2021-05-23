@@ -82,7 +82,7 @@ func (s *redisStore) put(key string, data []byte, expire time.Duration) error {
 	}
 
 	expireS := int64(expire / time.Second)
-	err = s.client.Do(ctx, radix.FlatCmd(nil, "SETEX", key, expireS, data))
+	err = s.client.Do(ctx, radix.FlatCmd(nil, "SETEX", "upl:"+key, expireS, data))
 	if err != nil {
 		return err
 	}

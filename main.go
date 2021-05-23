@@ -27,6 +27,7 @@ func main() {
 	router.Methods(http.MethodGet).PathPrefix("/assets").HandlerFunc(handleAssets)
 
 	router.Methods(http.MethodGet).Path("/create").HandlerFunc(handleCreate)
+	router.Methods(http.MethodPost).Path("/create").HandlerFunc(handleCreateForm)
 	uploadRouter := router.PathPrefix("/{id}").Subrouter()
 
 	uploadTemplateRouter := uploadRouter.Path("").Subrouter()

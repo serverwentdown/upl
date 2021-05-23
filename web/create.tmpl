@@ -1,5 +1,7 @@
-{{template "head.tmpl" "Create Dropbox"}}
-<form class="space-y-6">
+{{template "head.tmpl" "Create dropbox"}}
+<form class="space-y-8 px-6 my-8" method="POST">
+
+	<h1 class="my-4 text-4xl font-bold text-center">Create a dropbox</h1>
 
 	<section class="space-y-4">
 		<div class="flex items-center">
@@ -32,7 +34,7 @@
 					type="text"
 					id="options-region"
 					name="Region"
-					placeholder="us-west-2">
+					placeholder="us-east-1">
 			</div>
 		</div>
 		<div>
@@ -67,7 +69,7 @@
 					class="rounded"
 					type="checkbox"
 					id="options-save-upload"
-					data-save="Prefix,ExpiryNumber,ExpiryUnits">
+					data-save="Prefix,ExpiresNumber,ExpiresUnits">
 				<label for="options-save-upload">Remember</label>
 			</span>
 		</div>
@@ -83,24 +85,24 @@
 					value="{random}/">
 			</div>
 			<p class="mt-1 text-sm text-gray-500">
-				Files will be uploaded with this prefix. For a random 16-character <code>[a-z0-9]</code> prefix , use <code>{random}</code>.
+			Files will be uploaded with this prefix. For a random <code>[a-z0-9]{16}</code> prefix , use <code>{random}</code>.
 			</p>
 		</div>
 		<div>
-			<label for="options-expiry-number">Expiry</label>
+			<label for="options-expiry-number">Expires</label>
 			<div class="mt-1 flex">
 				<input
 					class="w-full rounded-l-md border-gray-400"
 					type="number"
 					id="options-expiry-number"
-					name="ExpiryNumber"
+					name="ExpiresNumber"
 					value="7"
 					min="0"
 					max="1000">
 				<select
-					class="rounded-r-md border-gray-400"
+					class="rounded-r-md border-gray-400 border-l-0"
 					id="options-expiry-unit"
-					name="ExpiryUnits">
+					name="ExpiresUnits">
 					<option value="m">minutes</option>
 					<option value="h">hours</option>
 					<option value="d" selected>days</option>
@@ -112,9 +114,18 @@
 			</p>
 			<input
 				type="hidden"
-				name="Expiry"
-				data-derive="duration,ExpiryNumber,ExpiryUnits"
+				name="Expires"
+				data-derive="duration,ExpiresNumber,ExpiresUnits"
 				data-derive-notice="#expiry-notice">
+		</div>
+	</section>
+
+	<section class="space-y-4">
+		<div class="flex justify-end">
+			<input
+				class="px-6 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 focus:ring-2 focus:ring-offset-2 focus:ring-green-600"
+				type="submit"
+				value="Create">
 		</div>
 	</section>
 

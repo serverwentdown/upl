@@ -3,13 +3,16 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"html/template"
 	"io"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
+	gonanoid "github.com/matoous/go-nanoid/v2"
 )
 
 var globalStore store
@@ -46,6 +49,8 @@ func executeTemplate(w io.Writer, name string, data interface{}) error {
 }
 
 /* credentials */
+
+var idAlphabet = "0123456789abcdefghijklmnopqrstuvwxyz"
 
 func getCredential(id string) (credential, error) {
 	cred := credential{}
@@ -99,4 +104,46 @@ func handleUpload(w http.ResponseWriter, req *http.Request) {
 
 func handleCreate(w http.ResponseWriter, req *http.Request) {
 	executeTemplate(w, "create.tmpl", nil)
+}
+
+/* create form */
+
+type createReq struct {
+	credential
+	Expires time.Duration
+}
+
+func handleCreateForm(w http.ResponseWriter, req *http.Request) {
+	cred := credential{
+		Endpoint:  req.PostFormValue("Endpoint"),
+		Region:    req.PostFormValue("Region"),
+		AccessKey: req.PostFormValue("AccessKey"),
+		SecretKey: req.PostFormValue("SecretKey"),
+		Prefix:    req.PostFormValue("Prefix"),
+	}
+	if err := cred.validate(); err != nil {
+		errorResponse(w, req, fmt.Errorf("%w: %s", errBadRequest, err))
+		return
+	}
+
+	expiresN, err := strconv.ParseUint(req.PostFormValue("Expires"), 10, 64)
+	if err != nil {
+		errorResponse(w, req, fmt.Errorf("%w: %s", errBadRequest, err))
+		return
+	}
+	expires := time.Duration(expiresN)
+	if expires < 10*time.Minute || expires > 90*24*time.Hour {
+		errorResponse(w, req, fmt.Errorf("%w: time must be between 10 minutes and 90 days", errBadRequest))
+		return
+	}
+
+	id := gonanoid.MustGenerate(idAlphabet, 20)
+
+	err = setCredential(id, cred, expires)
+	if err != nil {
+		errorResponse(w, req, err)
+		return
+	}
+
+	w.Write([]byte(id))
 }
