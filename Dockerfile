@@ -1,5 +1,7 @@
 FROM node:16-alpine3.13 as build-web
 
+ARG NODE_ENV=production
+
 WORKDIR /src
 COPY . .
 RUN cd web && npm install

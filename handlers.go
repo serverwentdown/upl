@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"html/template"
+	"io"
 	"net/http"
 	"os"
 	"time"
@@ -12,12 +13,17 @@ import (
 )
 
 var globalStore store
+var handleAssets = http.FileServer(http.FS(assetsWeb))
 
 func setupHandlers() {
 	var err error
 	globalStore, err = newRedisStore(os.Getenv("REDIS_CONNECTION"))
 	if err != nil {
 		panic(err)
+	}
+
+	if debug {
+		handleAssets = http.FileServer(http.FS(os.DirFS("web/assets/")))
 	}
 }
 
@@ -57,6 +63,13 @@ func setCredential(id string, cred credential, expire time.Duration) error {
 
 var tmpl = template.Must(template.ParseFS(assets, "web/*.tmpl"))
 
+func executeTemplate(w io.Writer, name string, data interface{}) error {
+	if debug {
+		tmpl = template.Must(template.ParseGlob("web/*.tmpl"))
+	}
+	return tmpl.ExecuteTemplate(w, name, nil)
+}
+
 /* upload template */
 
 func handleUpload(w http.ResponseWriter, req *http.Request) {
@@ -64,7 +77,7 @@ func handleUpload(w http.ResponseWriter, req *http.Request) {
 	_, err := getCredential(vars["id"])
 	if errors.Is(err, errNotFound) {
 		errorResponseStatus(w, req, err)
-		tmpl.ExecuteTemplate(w, "upload-not-found.tmpl", nil)
+		executeTemplate(w, "upload-not-found.tmpl", nil)
 		return
 	}
 	if err != nil {
@@ -72,11 +85,11 @@ func handleUpload(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	tmpl.ExecuteTemplate(w, "upload.tmpl", nil)
+	executeTemplate(w, "upload.tmpl", nil)
 }
 
 /* create template */
 
 func handleCreate(w http.ResponseWriter, req *http.Request) {
-	tmpl.ExecuteTemplate(w, "create.tmpl", nil)
+	executeTemplate(w, "create.tmpl", nil)
 }

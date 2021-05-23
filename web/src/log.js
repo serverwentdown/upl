@@ -1,7 +1,5 @@
 import filesize from 'filesize';
 
-import './log.css';
-
 class Log {
 	constructor(selector, key) {
 		this.key = key;

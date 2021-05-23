@@ -1,0 +1,116 @@
+{{template "head.tmpl" "Create Dropbox"}}
+<form class="space-y-6">
+
+	<section class="space-y-4">
+		<div class="flex items-center">
+			<h4 class="my-2 flex-1 text-lg font-bold">Bucket options</h4>
+			<span>
+				<input
+					class="rounded"
+					type="checkbox"
+					id="options-save-bucket"
+					data-save="Endpoint,Region,AccessKey,SecretKey,Prefix,ACL">
+				<label for="options-save-bucket">Remember</label>
+			</span>
+		</div>
+		<div>
+			<label for="options-endpoint">Endpoint</label>
+			<div class="mt-1">
+				<input
+					class="w-full rounded-md border-gray-400"
+					type="url"
+					id="options-endpoint"
+					name="Endpoint"
+					placeholder="https://bucketname.s3.us-west-2.amazonaws.com">
+			</div>
+		</div>
+		<div>
+			<label for="options-region">Region</label>
+			<div class="mt-1">
+				<input
+					class="w-full rounded-md border-gray-400"
+					type="text"
+					id="options-region"
+					name="Region"
+					placeholder="us-west-2">
+			</div>
+		</div>
+		<div>
+			<label for="options-accesskey">Access key</label>
+			<div class="mt-1">
+				<input
+					class="w-full rounded-md border-gray-400"
+					type="text"
+					id="options-accesskey"
+					name="AccessKey"
+					placeholder="">
+			</div>
+		</div>
+		<div>
+			<label for="options-secretkey">Secret key</label>
+			<div class="mt-1">
+				<input
+					class="w-full rounded-md border-gray-400"
+					type="text"
+					id="options-secretkey"
+					name="SecretKey"
+					placeholder="">
+			</div>
+		</div>
+	</section>
+
+	<section class="space-y-4">
+		<div class="flex items-center">
+			<h4 class="my-2 flex-1 text-lg font-bold">Upload options</h4>
+			<span>
+				<input
+					class="rounded"
+					type="checkbox"
+					id="options-save-upload"
+					data-save="Prefix,ExpiryNumber,ExpiryUnits">
+				<label for="options-save-upload">Remember</label>
+			</span>
+		</div>
+		<div>
+			<label for="options-prefix">Prefix</label>
+			<div class="mt-1">
+				<input
+					class="w-full rounded-md border-gray-400"
+					type="text"
+					id="options-prefix"
+					name="Prefix"
+					placeholder="uploads/"
+					value="{random}/">
+			</div>
+			<p class="mt-1 text-sm text-gray-500">
+				Files will be uploaded with this prefix. For a random 16-character <code>[a-z0-9]</code> prefix , use <code>{random}</code>.
+			</p>
+		</div>
+		<div>
+			<label for="options-expiry-number">Expiry</label>
+			<div class="mt-1 flex">
+				<input
+					class="w-full rounded-l-md border-gray-400"
+					type="number"
+					id="options-expiry-number"
+					name="ExpiryNumber"
+					value="7"
+					min="0">
+				<select
+					class="rounded-r-md border-gray-400"
+					id="options-expiry-unit"
+					name="ExpiryUnits">
+					<option value="m">minutes</option>
+					<option value="h">hours</option>
+					<option value="d" selected>days</option>
+				</select>
+			</div>
+			<p class="mt-1 text-sm text-gray-500">
+				Time until the link expires, and credentials are purged from the server.
+			</p>
+			<input type="hidden" name="Expiry" value="" data-derive="duration,ExpiryNumber,ExpiryUnits">
+		</div>
+	</section>
+
+</form>
+{{template "foot.tmpl"}}

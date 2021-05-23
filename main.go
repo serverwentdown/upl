@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io/fs"
 	"log"
 	"net/http"
 	"os"
@@ -10,15 +9,12 @@ import (
 	"github.com/gorilla/mux"
 )
 
+var debug = os.Getenv("DEBUG") == "true"
+
 func main() {
 	listen := os.Getenv("LISTEN")
 	if listen == "" {
 		listen = ":8080"
-	}
-
-	assetsWeb, err := fs.Sub(assets, "web")
-	if err != nil {
-		panic(err)
 	}
 
 	setupHandlers()
@@ -28,8 +24,9 @@ func main() {
 	router.Use(middlewareLogger)
 
 	router.Methods(http.MethodGet).Path("/readyz").HandlerFunc(readyz)
-	router.Methods(http.MethodGet).PathPrefix("/assets").Handler(http.FileServer(http.FS(assetsWeb)))
-	router.Methods(http.MethodGet).Path("/").HandlerFunc(handleCreate)
+	router.Methods(http.MethodGet).PathPrefix("/assets").Handler(handleAssets)
+
+	router.Methods(http.MethodGet).Path("/create").HandlerFunc(handleCreate)
 	uploadRouter := router.PathPrefix("/{id}").Subrouter()
 
 	uploadTemplateRouter := uploadRouter.Path("").Subrouter()
@@ -49,8 +46,8 @@ func main() {
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
-	log.Printf("listeining on %s", listen)
-	err = server.ListenAndServe()
+	log.Printf("listening on %s", listen)
+	err := server.ListenAndServe()
 	if err != nil {
 		panic(err)
 	}

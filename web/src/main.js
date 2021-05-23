@@ -3,12 +3,24 @@ import DragDrop from '@uppy/drag-drop';
 import StatusBar from '@uppy/status-bar';
 import AwsS3Multipart from '@uppy/aws-s3-multipart';
 
+/* CSS */
+
+import 'tailwindcss/tailwind.css';
+
 import '@uppy/core/dist/style.css';
 import '@uppy/drag-drop/dist/style.css';
 import '@uppy/status-bar/dist/style.css';
-import './main.css';
+
+/* Components */
 
 import Log from './log';
+
+const log = new Log('#log-area', window.location.pathname);
+document.querySelector('#log-clear').addEventListener('click', () => {
+	log.clear();
+});
+
+/* Uppy */
 
 const uppy = new Uppy({
 	autoProceed: true,
@@ -25,7 +37,7 @@ uppy.use(AwsS3Multipart, {
 	companionUrl: window.location.pathname,
 });
 
-const log = new Log('#log-area', window.location.pathname);
+/* Uppy handlers */
 
 uppy.on('upload-success', (f, res) => {
 	log.add({
@@ -33,8 +45,4 @@ uppy.on('upload-success', (f, res) => {
 		size: f.size,
 		location: res.body.Location,
 	});
-});
-
-document.querySelector('#log-clear').addEventListener('click', () => {
-	log.clear();
 });

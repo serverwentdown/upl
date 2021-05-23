@@ -15,10 +15,20 @@ export default {
 	},
     plugins: [
 		commonjs(),
-		resolve({ browser: true }),
-		postcss({ extract: true, minimize: true }),
-		copy({ targets: [
-			{ src: 'static/favicon.png', dest: 'assets' },
-		] }),
+		resolve({
+			browser: true,
+		}),
+		postcss({
+			plugins: [
+				require('tailwindcss'),
+			],
+			extract: true,
+			minimize: true,
+		}),
+		copy({
+			targets: [
+				{ src: 'static/favicon.png', dest: 'assets' },
+			],
+		}),
 	],
 };
