@@ -12,6 +12,8 @@ A dropbox backed by any S3 bucket
 - Remembers previously created dropboxes and uploaded files
 - Single fat binary
 
+<img alt="Screenshot 1" width=400 src="https://user-images.githubusercontent.com/1705906/119283410-842f0d80-bc6f-11eb-9126-fdfce8d44dd5.png"><img alt="Screenshot 2" width=400 src="https://user-images.githubusercontent.com/1705906/119283425-914bfc80-bc6f-11eb-97b0-c7b74fecb192.png">
+
 ## Building
 
 You'll need:
