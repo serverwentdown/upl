@@ -12,6 +12,19 @@ A dropbox backed by any S3 bucket
 - Remembers previously created dropboxes and uploaded files
 - Single fat binary
 
+## Building
+
+You'll need:
+- Node.js
+- Go
+- `make`
+
+```
+make TAGS=production
+```
+
+Alternatively, `docker build .` this project.
+
 ## Deploying
 
 To deploy as a single binary, build it from source and run:
