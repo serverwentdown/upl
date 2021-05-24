@@ -1,14 +1,12 @@
 
 # upl
 
-A dropbox backed by any S3 bucket
+A dropbox backed by any S3 bucket.
 
-## Features
+`upl` allows you to create dropboxes by providing the credentials for any S3-compatible bucket. A link will be generated that can be visited in a web browser to upload files. Links expire after a configurable amount of time.
 
-- User interface to create new dropboxes
-- Store bucket credentials and settings in a Redis KV store
-- Drop stored credentials when the dropbox link expires
-- Upload files using S3 multipart uploads, powered by [Uppy](https://uppy.io)
+- Simple web interface
+- Works with large files by using S3 multipart uploads, powered by [Uppy](https://uppy.io)
 - Remembers previously created dropboxes and uploaded files
 - Single fat binary
 
