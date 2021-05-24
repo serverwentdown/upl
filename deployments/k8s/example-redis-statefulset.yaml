@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: upl-redis
+spec:
+  # This is a single-master Redis setup, there must only be one replica
+  replicas: 1
+  serviceName: upl-redis
+  selector:
+    matchLabels:
+      app: upl-redis
+  template:
+    metadata:
+      labels:
+        app: upl-redis
+    spec:
+      containers:
+      - image: redis:6-alpine3.13
+        name: upl-redis
+        command: ["redis-server"]
+        args: ["--appendonly", "yes"]
+        resources:
+          requests:
+            cpu: "1"
+            memory: "1Gi"
+            ephemeral-storage: "1Gi"
+          limits:
+            cpu: "1"
+            memory: "1Gi"
+            ephemeral-storage: "1Gi"
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        readinessProbe:
+          exec:
+            command: ["redis-cli", "ping"]
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: upl-redis-claim

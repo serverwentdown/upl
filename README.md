@@ -22,5 +22,6 @@ export LISTEN=:8080
 ./upl
 ```
 
+For example Kubernetes manifests or Docker Compose files, see the [deployments](./deployments) folder.
 
 <!-- vim: set conceallevel=2 et ts=2 sw=2: -->

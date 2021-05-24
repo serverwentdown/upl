@@ -1,0 +1,31 @@
+version: "3.2"
+services:
+
+  redis:
+    image: redis:6-alpine3.13
+    command: redis-server --appendonly yes
+    volumes:
+    - upl-redis-data:/data
+    networks:
+      upl:
+
+  upl:
+    image: ghcr.io/serverwentdown/upl:latest
+    restart: on-failure
+    environment:
+      LISTEN: ":8080"
+      REDIS_CONNECTION: simple:redis:6379
+    ports:
+    - 8080:8080
+    depends_on:
+    - redis
+    networks:
+      upl:
+
+volumes:
+  upl-redis-data:
+
+networks:
+  upl:
+
+# vim: set et ts=2 sw=2:

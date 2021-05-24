@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: upl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: upl
+  template:
+    metadata:
+      labels:
+        app: upl
+    spec:
+      containers:
+      - image: ghcr.io/serverwentdown/upl:latest
+        imagePullPolicy: Always
+        name: upl
+        env:
+        - name: LISTEN
+          value: ":8080"
+        - name: REDIS_CONNECTION
+          value: simple:upl-redis:6379
+        resources:
+          requests:
+            cpu: "1"
+            memory: "512Mi"
+            ephemeral-storage: "1Gi"
+          limits:
+            cpu: "1"
+            memory: "512Mi"
+            ephemeral-storage: "1Gi"
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8080
