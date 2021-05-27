@@ -32,7 +32,7 @@ func preSign(req *http.Request, cred credential) *http.Request {
 		*req,
 		cred.AccessKey, cred.SecretKey, "",
 		cred.Region,
-		60*60, // seconds
+		1*60, // seconds
 	)
 	return signedReq
 }
@@ -91,7 +91,7 @@ func initiateMultipartUpload(
 	key string,
 	cred credential,
 ) (initiateMultipartUploadResult, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	params := make(url.Values)
@@ -157,7 +157,7 @@ func listParts(
 	cred credential,
 	partNumberMarker uint32,
 ) (listPartsResult, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	params := make(url.Values)
@@ -231,7 +231,7 @@ func completeMultipartUpload(
 	parts []completePart,
 	cred credential,
 ) (completeMultipartUploadResult, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
 	var body bytes.Buffer
@@ -281,7 +281,7 @@ func abortMultipartUpload(
 	key, uploadID string,
 	cred credential,
 ) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	params := make(url.Values)
