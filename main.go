@@ -44,8 +44,7 @@ func main() {
 	server := &http.Server{
 		Handler:      router,
 		Addr:         listen,
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 10 * time.Second,
+		ReadTimeout:  30 * time.Second,
 	}
 	log.Printf("listening on %s", listen)
 	err := server.ListenAndServe()
