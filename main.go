@@ -42,9 +42,9 @@ func main() {
 	s3Router.Methods(http.MethodDelete).Path("/{uploadID}").HandlerFunc(handleAbortMultipartUpload)
 
 	server := &http.Server{
-		Handler:      router,
-		Addr:         listen,
-		ReadTimeout:  30 * time.Second,
+		Handler:     router,
+		Addr:        listen,
+		ReadTimeout: 30 * time.Second,
 	}
 	log.Printf("listening on %s", listen)
 	err := server.ListenAndServe()
