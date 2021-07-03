@@ -14,6 +14,7 @@ uploadAreas.forEach(uploadArea => {
 	const logClearBtn = uploadArea.querySelector('.log-clear')
 	const dropArea = uploadArea.querySelector('.drop-area');
 	const statusArea = uploadArea.querySelector('.status-area');
+	const noticeArea = uploadArea.querySelector('.notice-area');
 
 	/* Components */
 
@@ -24,6 +25,20 @@ uploadAreas.forEach(uploadArea => {
 	logClearBtn.addEventListener('click', () => {
 		log.clear();
 	});
+
+	/* Error */
+
+	function showError(error='') {
+		let message = error.message || error.toString();
+		if (message !== '') {
+			noticeArea.classList.remove('hidden');
+			noticeArea.innerText = message;
+		} else {
+			noticeArea.classList.add('hidden');
+			noticeArea.innerText = message;
+		}
+		window.scrollTo({ top: 0 });
+	}
 
 	/* Uppy */
 
@@ -42,7 +57,19 @@ uploadAreas.forEach(uploadArea => {
 		companionUrl: window.location.pathname,
 	});
 
+	uppy.on('upload-error', (f, error, res) => {
+		window.e = { f, error, res };
+		if (error.message.contains('status: 409')) {
+			showError('A file with the same name already exists. Rename your file and try again');
+			return;
+		}
+		showError(error);
+	});
+	uppy.on('upload-retry', (id) => {
+		showError();
+	});
 	uppy.on('upload-success', (f, res) => {
+		showError();
 		log.add({
 			name: f.name,
 			size: f.size,

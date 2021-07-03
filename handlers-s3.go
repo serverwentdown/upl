@@ -71,6 +71,12 @@ func handleCreateMultipartUpload(w http.ResponseWriter, req *http.Request) {
 	// Derive the object key
 	key := formatKey(cred.Prefix, r.Filename)
 
+	// Ensure that the file does not exist
+	err = headObject(key, cred)
+	if !errors.Is(err, errNotFound) {
+		errorResponse(w, req, fmt.Errorf("%w: the provided key exists", errConflict))
+	}
+
 	result, err := initiateMultipartUpload(key, cred)
 	if err != nil {
 		errorResponse(w, req, err)
@@ -104,7 +110,7 @@ func handleGetUploadedParts(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	parts := make(getUploadedPartsRes, 0, 0)
+	parts := make(getUploadedPartsRes, 0)
 	var nextPartNumberMarker uint32
 	for {
 		page, err := listParts(key, uploadID, cred, nextPartNumberMarker)

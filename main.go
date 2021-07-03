@@ -28,6 +28,7 @@ func main() {
 
 	router.Methods(http.MethodGet).Path("/").HandlerFunc(handleCreate)
 	router.Methods(http.MethodPost).Path("/").HandlerFunc(handleCreateForm)
+	router.Methods(http.MethodGet).Path("/help").HandlerFunc(handleHelp)
 	uploadRouter := router.PathPrefix("/{id}").Subrouter()
 
 	uploadTemplateRouter := uploadRouter.Path("").Subrouter()

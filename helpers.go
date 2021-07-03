@@ -10,6 +10,7 @@ var errBadRequest = errors.New("bad request")
 var errInternalServerError = errors.New("internal server error")
 var errUnauthorized = errors.New("unauthorized")
 var errForbidden = errors.New("forbidden")
+var errConflict = errors.New("conflict")
 
 func errorResponseStatus(w http.ResponseWriter, req *http.Request, err error) {
 	errorStatus := http.StatusInternalServerError
@@ -24,6 +25,8 @@ func errorResponseStatus(w http.ResponseWriter, req *http.Request, err error) {
 		errorStatus = http.StatusUnauthorized
 	} else if errors.Is(err, errForbidden) {
 		errorStatus = http.StatusForbidden
+	} else if errors.Is(err, errConflict) {
+		errorStatus = http.StatusConflict
 	}
 
 	w.WriteHeader(errorStatus)
@@ -50,6 +53,8 @@ func responseToError(resp *http.Response) error {
 		return errUnauthorized
 	} else if resp.StatusCode == http.StatusForbidden {
 		return errForbidden
+	} else if resp.StatusCode == http.StatusConflict {
+		return errConflict
 	}
 	return nil
 }

@@ -307,3 +307,34 @@ func abortMultipartUpload(
 
 	return nil
 }
+
+/* headObject */
+
+func headObject(
+	key string,
+	cred credential,
+) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	unsignedReq, err := http.NewRequestWithContext(ctx, http.MethodHead, cred.Endpoint+"/"+key, nil)
+	if err != nil {
+		log.Printf("failure creating request: %v", err)
+		return err
+	}
+
+	signedReq := sign(unsignedReq, cred)
+	resp, err := httpClientS3.Do(signedReq)
+	if err != nil {
+		log.Printf("failure connecting to endpoint: %v", err)
+		return err
+	}
+	defer resp.Body.Close()
+	err = endpointReturnedError(resp)
+	if err != nil {
+		log.Printf("endpoint responded negatively: %v", err)
+		return err
+	}
+
+	return nil
+}

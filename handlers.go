@@ -148,3 +148,9 @@ func handleCreateForm(w http.ResponseWriter, req *http.Request) {
 
 	w.Write([]byte(id))
 }
+
+/* help template */
+
+func handleHelp(w http.ResponseWriter, req *http.Request) {
+	executeTemplate(w, "help.tmpl", nil)
+}
