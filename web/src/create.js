@@ -38,6 +38,7 @@ createAreas.forEach(createArea => {
 			noticeArea.classList.add('hidden');
 			noticeArea.innerText = message;
 		}
+		window.scrollTo({ top: 0 });
 	}
 
 	createArea.addEventListener('submit', e => {
@@ -65,6 +66,7 @@ Prefix: ${data.get('Prefix')}
 Expires: ${data.get('ExpiresNumber')}${data.get('ExpiresUnits')}
 		`.trim(),
 				});
+				window.scrollTo({ top: 0 });
 			})
 			.catch(showError);
 	});

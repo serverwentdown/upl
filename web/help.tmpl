@@ -1,0 +1,105 @@
+{{template "head.tmpl" "Help"}}
+<div class="space-y-12 px-6 my-12" method="POST">
+
+	<section class="space-y-6">
+		<h1 class="text-4xl font-bold text-center" id="create">Creating a dropbox</h1>
+
+		<div class="space-y-4">
+			<p>Before you can create a dropbox, you need an S3-compatible bucket and credentials for that bucket. Any service that implements S3-compatible multipart uploads are supported by this tool:</p>
+			<ul class="list-disc ml-6">
+				<li><a class="text-blue-600 hover:text-blue-800" target="_blank" href="https://aws.amazon.com/s3/">Amazon AWS S3</a></li>
+				<li><a class="text-blue-600 hover:text-blue-800" target="_blank" href="https://min.io">MinIO</a></li>
+				<li><a class="text-blue-600 hover:text-blue-800" target="_blank" href="https://www.digitalocean.com/products/spaces/">DigitalOcean Spaces</a></li>
+				<li>Many others...</li>
+			</ul>
+		</div>
+		
+		<div class="space-y-4">
+			<h2 class="text-3xl font-bold" id="bucket">Creating a bucket</h2>
+			<p>Create a bucket for use with this tool. For security, avoid sharing a bucket with another system. On platforms protected by CORS like AWS, <a class="text-blue-600 hover:text-blue-800" target="_blank" href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/enabling-cors-examples.html">configure CORS</a> to allow requests from this tool:</p>
+			<pre class="text-xs text-gray-500">
+[
+    {
+        "AllowedHeaders": [
+            "*"
+        ],
+        "AllowedMethods": [
+            "GET",
+            "PUT",
+            "POST",
+            "DELETE"
+        ],
+        "AllowedOrigins": [
+            "http://UPL_HOSTNAME",
+            "https://UPL_HOSTNAME"
+        ],
+        "ExposeHeaders": [
+            "ETag"
+        ]
+    }
+]
+</pre>
+			<p>Additionally, consider setting up a <a class="text-blue-600 hover:text-blue-800" target="_blank" href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpu-abort-incomplete-mpu-lifecycle-config.html">lifecycle policy</a> to automatically abort incomplete multipart uploads.</a>
+		</div>
+		
+		<div class="space-y-4">
+			<h2 class="text-3xl font-bold" id="credentials">Creating credentials</h2>
+			<p>Create an access and secret key pair for use with this tool. Follow your platform configuration for more information. On AWS, this can be done by creating a user in IAM. The access key must have the following capabilities:</p>
+			<pre class="text-xs text-gray-500">
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutObject",
+                "s3:AbortMultipartUpload",
+                "s3:ListMultipartUploadParts"
+            ],
+            "Resource": "arn:aws:s3:::BUCKET_NAME/*"
+        }
+    ]
+}
+</pre>
+		</div>
+		
+		<div class="mt-6 space-y-4">
+			<h2 class="text-3xl font-bold" id="public-access">Allowing public access</h2>
+			<p>You can optionally allow users to access the uploaded files. This can be done by attaching the following <a class="text-blue-600 hover:text-blue-800" target="_blank" href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-policy-language-overview.html">bucket policy</a>:</p>
+			<pre class="text-xs text-gray-500">
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "PublicRead",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::BUCKET_NAME/*"
+        }
+    ]
+}
+</pre>
+		</div>
+		
+		<div class="my-4">
+
+		</div>
+	</section>
+
+	<section class="space-y-6">
+		<h1 class="text-4xl font-bold text-center">Uploading files</h1>
+
+		<div class="space-y-4">
+			<p>Work in progress...</p>
+		</div>
+	</section>
+
+</div>
+
+<script>
+	document.querySelectorAll('pre, code').forEach(codeArea => {
+		codeArea.innerHTML = codeArea.innerHTML.replace(/UPL_HOSTNAME/g, window.location.host);
+	});
+</script>
+{{template "foot.tmpl"}}

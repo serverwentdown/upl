@@ -86,7 +86,7 @@
 					placeholder="">
 			</div>
 			<p class="mt-1 text-sm text-gray-500">
-				Your keys will be stored in the database until the dropbox link expires.
+				Your keys will be stored in the database until the dropbox link expires. See <a class="text-blue-600 hover:text-blue-800" href="help#credentials">creating credentials</a> for more information.
 			</p>
 		</div>
 
@@ -113,7 +113,7 @@
 					value="">
 			</div>
 			<p class="mt-1 text-sm text-gray-500">
-				Specify a <a class="text-blue-600 hover:text-blue-800" target="_blank" href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html#canned-acl">canned ACL</a>. Otherwise, object access permissions will follow bucket defaults.
+				Specify a <a class="text-blue-600 hover:text-blue-800" target="_blank" href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html#canned-acl">canned ACL</a>. Otherwise, object access permissions will follow bucket defaults, usually private unless <a class="text-blue-600 hover:text-blue-800" href="help#public-access">public access</a> is configured.
 			</p>
 		</div>
 		<div>
@@ -164,6 +164,11 @@
 				data-derive-notice="#expiry-notice">
 		</div>
 		<div class="flex justify-end">
+			<a
+				class="px-6 py-2 rounded-md text-blue-600 hover:text-blue-800 focus:ring-2 focus:ring-offset-2 focus:ring-blue-600"
+				href="help#create">
+				Help
+			</a>
 			<input
 				class="px-6 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 focus:ring-2 focus:ring-offset-2 focus:ring-green-600"
 				type="submit"
