@@ -231,7 +231,7 @@ func completeMultipartUpload(
 	parts []completePart,
 	cred credential,
 ) (completeMultipartUploadResult, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Hour)
 	defer cancel()
 
 	var body bytes.Buffer
