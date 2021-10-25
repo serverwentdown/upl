@@ -51,15 +51,27 @@ uploadAreas.forEach(uploadArea => {
 	});
 	uppy.use(StatusBar, {
 		target: statusArea,
+		showProgressDetails: true,
 	});
 	uppy.use(AwsS3Multipart, {
 		limit: 3,
 		companionUrl: window.location.pathname,
 	});
 
+	uppy.on('file-added', (f, progress) => {
+		console.debug(`${f.id}: Waiting...`)
+	});
+	uppy.on('upload-progress', (f, progress) => {
+		if (!progress.uploadComplete) {
+			console.debug(`${f.id}: Uploading: ${progress.percentage}%`)
+		} else {
+			console.debug(`${f.id}: Processing...`);
+		}
+	});
 	uppy.on('upload-error', (f, error, res) => {
+		console.debug(`${f.id}: Error: ${error}`);
 		window.e = { f, error, res };
-		if (error.message.contains('status: 409')) {
+		if (error.message?.includes('status: 409')) {
 			showError('A file with the same name already exists. Rename your file and try again');
 			return;
 		}
