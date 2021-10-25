@@ -4,6 +4,7 @@ import StatusBar from '@uppy/status-bar';
 import AwsS3Multipart from '@uppy/aws-s3-multipart';
 
 import Log from './log';
+import Progress from './progress';
 
 const uploadAreas = document.querySelectorAll('.upload');
 uploadAreas.forEach(uploadArea => {
@@ -14,31 +15,16 @@ uploadAreas.forEach(uploadArea => {
 	const logClearBtn = uploadArea.querySelector('.log-clear')
 	const dropArea = uploadArea.querySelector('.drop-area');
 	const statusArea = uploadArea.querySelector('.status-area');
-	const noticeArea = uploadArea.querySelector('.notice-area');
 
 	/* Components */
 
 	const log = new Log(logArea, window.location.pathname, {
 		empty: 'Your locally-stored file upload history is empty',
 	});
-
 	logClearBtn.addEventListener('click', () => {
 		log.clear();
 	});
-
-	/* Error */
-
-	function showError(error='') {
-		let message = error.message || error.toString();
-		if (message !== '') {
-			noticeArea.classList.remove('hidden');
-			noticeArea.innerText = message;
-		} else {
-			noticeArea.classList.add('hidden');
-			noticeArea.innerText = message;
-		}
-		window.scrollTo({ top: 0 });
-	}
+	const progress = new Progress(statusArea);
 
 	/* Uppy */
 
@@ -49,17 +35,21 @@ uploadAreas.forEach(uploadArea => {
 		target: dropArea,
 		height: '16rem',
 	});
-	uppy.use(StatusBar, {
-		target: statusArea,
-		showProgressDetails: true,
-	});
 	uppy.use(AwsS3Multipart, {
 		limit: 3,
 		companionUrl: window.location.pathname,
 	});
 
 	uppy.on('file-added', (f, progress) => {
-		console.debug(`${f.id}: Waiting...`)
+		console.debug(`${f.id}: Waiting...`, f)
+		progress.add(f.id, {
+			name: f.name,
+			size: f.size,
+			status: 'WAITING',
+		});
+	});
+	uppy.on('error', (error) => {
+		console.debug(`Error: ${JSON.stringify(error)}`);
 	});
 	uppy.on('upload-progress', (f, progress) => {
 		if (!progress.uploadComplete) {
@@ -67,21 +57,29 @@ uploadAreas.forEach(uploadArea => {
 		} else {
 			console.debug(`${f.id}: Processing...`);
 		}
+		progress.update(f.id, {
+			...progress,
+			status: progress.uploadComplete ? 'PROCESSING' : 'UPLOADING',
+		});
 	});
 	uppy.on('upload-error', (f, error, res) => {
-		console.debug(`${f.id}: Error: ${error}`);
-		window.e = { f, error, res };
+		console.debug(`${f.id}: Error: ${JSON.stringify(error)} ${JSON.stringify(res)}`);
+		const message = error;
 		if (error.message?.includes('status: 409')) {
-			showError('A file with the same name already exists. Rename your file and try again');
-			return;
+			message = 'A file with the same name already exists. Rename your file and try again';
 		}
-		showError(error);
+		progress.update(f.id, {
+			error: message,
+			status: 'FAILED',
+		});
 	});
 	uppy.on('upload-retry', (id) => {
-		showError();
+		progress.update(id, {
+			status: 'RETRYING',
+		});
 	});
 	uppy.on('upload-success', (f, res) => {
-		showError();
+		progress.remove(f.id);
 		log.add({
 			name: f.name,
 			size: f.size,
