@@ -20,9 +20,7 @@ import (
 var httpClientS3 *http.Client
 
 func setupS3() {
-	httpClientS3 = &http.Client{
-		Timeout: 10 * time.Second,
-	}
+	httpClientS3 = &http.Client{}
 }
 
 /* signing */
