@@ -7,7 +7,7 @@ RUN cd web && npm install
 ARG NODE_ENV=production
 RUN cd web && npm run build
 
-FROM golang:1.16-alpine3.14 as build
+FROM golang:1.17-alpine3.14 as build
 
 RUN apk add \
 	make
