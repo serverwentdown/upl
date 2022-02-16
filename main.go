@@ -38,6 +38,7 @@ func main() {
 
 	s3Router.Methods(http.MethodPost).Path("").HandlerFunc(handleCreateMultipartUpload)
 	s3Router.Methods(http.MethodGet).Path("/{uploadID}").HandlerFunc(handleGetUploadedParts)
+	s3Router.Methods(http.MethodGet).Path("/{uploadID}/batch").HandlerFunc(handleBatchSignPartsUpload)
 	s3Router.Methods(http.MethodGet).Path("/{uploadID}/{uploadPart}").HandlerFunc(handleSignPartUpload)
 	s3Router.Methods(http.MethodPost).Path("/{uploadID}/complete").HandlerFunc(handleCompleteMultipartUpload)
 	s3Router.Methods(http.MethodDelete).Path("/{uploadID}").HandlerFunc(handleAbortMultipartUpload)

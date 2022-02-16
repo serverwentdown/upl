@@ -131,6 +131,61 @@ func handleGetUploadedParts(w http.ResponseWriter, req *http.Request) {
 	encoder.Encode(getUploadedPartsRes(parts))
 }
 
+/* batchSignPartsUpload */
+
+type batchSignPartsUploadRes struct {
+	PresignedURLs map[string]string `json:"presignedUrls"`
+}
+
+func handleBatchSignPartsUpload(w http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	cred, err := getCredential(vars["id"])
+	if err != nil {
+		errorResponse(w, req, err)
+		return
+	}
+
+	uploadID := vars["uploadID"]
+	key := req.URL.Query().Get("key")
+	partNumbers := req.URL.Query().Get("partNumbers")
+
+	if uploadID == "" || key == "" || partNumbers == "" {
+		errorResponse(w, req, fmt.Errorf("%w", errBadRequest))
+		return
+	}
+
+	partNumbersArray := strings.Split(partNumbers, ",")
+	partNumbersParsed := make([]uint16, 0, len(partNumbersArray))
+	for _, partNumber := range partNumbersArray {
+		n, err := strconv.ParseUint(partNumber, 10, 16)
+		if n < 1 || n > 10000 || err != nil {
+			errorResponse(w, req, fmt.Errorf("%w: invalid part number", errBadRequest))
+			return
+		}
+		partNumbersParsed = append(partNumbersParsed, uint16(n))
+	}
+
+	presignedURLs := make(map[string]string, len(partNumbersParsed))
+	for _, partNumber := range partNumbersParsed {
+		params := make(url.Values)
+		params.Add("partNumber", strconv.FormatUint(uint64(partNumber), 10))
+		params.Add("uploadId", uploadID)
+		unsignedReq, err := http.NewRequest(http.MethodPut, cred.Endpoint+"/"+key+"?"+params.Encode(), nil)
+		if err != nil {
+			errorResponse(w, req, fmt.Errorf("%w: %s", errInternalServerError, err))
+			return
+		}
+
+		signedReq := preSign(unsignedReq, cred)
+		presignedURLs[strconv.FormatUint(uint64(partNumber), 10)] = signedReq.URL.String()
+	}
+
+	encoder := json.NewEncoder(w)
+	encoder.Encode(batchSignPartsUploadRes{
+		PresignedURLs: presignedURLs,
+	})
+}
+
 /* signPartUpload */
 
 type signPartUploadRes struct {

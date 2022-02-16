@@ -1,5 +1,5 @@
 module.exports = {
-	purge: [
+	content: [
 		'./*.tmpl',
 		'./src/*.js',
 	],

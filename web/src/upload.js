@@ -41,6 +41,12 @@ uploadAreas.forEach(uploadArea => {
 	}
 
 	/* Uppy */
+	
+	let limit = window.localStorage.getItem('parallel');
+	if (!limit) {
+		limit = 3;
+	}
+	window.localStorage.setItem('parallel', 3);
 
 	const uppy = new Uppy({
 		autoProceed: true,
@@ -54,7 +60,7 @@ uploadAreas.forEach(uploadArea => {
 		showProgressDetails: true,
 	});
 	uppy.use(AwsS3Multipart, {
-		limit: 3,
+		limit,
 		companionUrl: window.location.pathname,
 	});
 
